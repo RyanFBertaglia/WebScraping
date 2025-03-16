@@ -1,4 +1,4 @@
-package com.scraping.demo;
+package com.scraping.demo.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Produto {
+public class Product {
     String nome;
     String preco;
     String local;

@@ -1,17 +1,29 @@
 package com.scraping.demo.controller;
 
-import com.scraping.demo.services.BuscaProduto;
-import com.scraping.demo.services.ChocolateAmericanas;
+import com.scraping.demo.entities.Product;
+import com.scraping.demo.services.Pesquisa;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
+@RequestMapping("/data")
 public class RelatorioController {
-    @GetMapping("getChocolate")
-    public ResponseEntity<String> getChocolate(@RequestBody String data){
-        BuscaProduto chocolate = new ChocolateAmericanas();
-        return ResponseEntity.ok("Ok" + chocolate.buscaProduto());
+
+
+    private final Pesquisa pesquisa;
+
+    @Autowired
+    public RelatorioController(Pesquisa pesquisa) {
+        this.pesquisa = pesquisa;
+    }
+
+    @GetMapping("/getProduct")
+    public ResponseEntity<Product> getProduct(@RequestParam String typeProduct){
+        Product product = pesquisa.findProduct(typeProduct);
+        return ResponseEntity.status(200).body(product);
     }
 }

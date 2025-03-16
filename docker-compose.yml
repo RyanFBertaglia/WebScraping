@@ -4,4 +4,4 @@ services:
     image: selenium/standalone-chrome:latest
     container_name: selenium_chrome
     ports:
-      - "4444:4444"  # Porta para conectar via Selenium RemoteWebDriver
+      - "4444:4444"  # Porta Selenium RemoteWebDriver

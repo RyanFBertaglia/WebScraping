@@ -1,7 +1,7 @@
 package com.scraping.demo.services;
 
-import com.scraping.demo.Produto;
+import com.scraping.demo.entities.Product;
 
 public interface BuscaProduto {
-    Produto buscaProduto();
+    Product buscaProduto();
 }
