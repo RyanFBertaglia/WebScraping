@@ -1,6 +1,7 @@
 package com.scraping.demo.services;
 
 import com.scraping.demo.entities.Product;
+import com.scraping.demo.exceptions.InvalidProductType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.Map;
@@ -18,7 +19,7 @@ public class Pesquisa {
     public BuscaProduto getInstanceProduct(String tipoProduto) {
         BuscaProduto produto = buscaProdutoMap.get(tipoProduto);
         if (produto == null) {
-            throw new IllegalArgumentException("Tipo de produto inválido: " + tipoProduto);
+            throw new InvalidProductType();
         }
         return produto;
     }
