@@ -22,7 +22,7 @@ public class RelatorioController {
     }
 
     @GetMapping("/getProduct")
-    public ResponseEntity<Product> getProduct(@RequestParam String typeProduct){
+    public ResponseEntity<Product> getProductInformation(@RequestParam String typeProduct){
         Product product = pesquisa.findProduct(typeProduct);
         return ResponseEntity.status(200).body(product);
     }
