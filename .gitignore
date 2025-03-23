@@ -1,0 +1,19 @@
+HELP.md
+src/main/resources/application.properties
+consumer/src/main/**/target/
+producer/src/main/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr

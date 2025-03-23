@@ -1,0 +1,17 @@
+version: '3'
+services:
+  selenium:
+    image: selenium/standalone-chrome:latest
+    container_name: selenium_chrome
+    ports:
+      - "4444:4444"  # Porta Selenium RemoteWebDriver
+  consumer:
+    image: consumer-scraping:v3
+    container_name: consumer-data
+    ports:
+      - "8080:8080"
+  producer:
+    image: producer-scraping:v3
+    container_name: producer-data
+    ports:
+      - "8081:8081"
