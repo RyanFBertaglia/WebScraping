@@ -1,8 +1,7 @@
 HELP.md
-producer/target/
 src/main/resources/application.properties
-!**/src/main/**/target/
-!**/src/test/**/target/
+consumer/src/main/**/target/
+producer/src/main/**/target/
 
 ### STS ###
 .apt_generated
