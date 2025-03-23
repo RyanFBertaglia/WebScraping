@@ -1,0 +1,13 @@
+D:\Programação\WebScraping\producer\src\main\java\com\scraping\controller\RelatorioController.java
+D:\Programação\WebScraping\producer\src\main\java\com\scraping\controller\RestExceptionHandler.java
+D:\Programação\WebScraping\producer\src\main\java\com\scraping\DemoApplication.java
+D:\Programação\WebScraping\producer\src\main\java\com\scraping\entities\Product.java
+D:\Programação\WebScraping\producer\src\main\java\com\scraping\exceptions\InvalidProductType.java
+D:\Programação\WebScraping\producer\src\main\java\com\scraping\exceptions\LoadPageError.java
+D:\Programação\WebScraping\producer\src\main\java\com\scraping\exceptions\NotFoundItem.java
+D:\Programação\WebScraping\producer\src\main\java\com\scraping\services\BuscaProduto.java
+D:\Programação\WebScraping\producer\src\main\java\com\scraping\services\ChocolateAmericanas.java
+D:\Programação\WebScraping\producer\src\main\java\com\scraping\services\ChocolateAtacadao.java
+D:\Programação\WebScraping\producer\src\main\java\com\scraping\services\ChocolateSpani.java
+D:\Programação\WebScraping\producer\src\main\java\com\scraping\services\ConectionFactory.java
+D:\Programação\WebScraping\producer\src\main\java\com\scraping\services\Pesquisa.java
