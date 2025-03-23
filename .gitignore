@@ -1,5 +1,4 @@
 HELP.md
-src/main/resources/application.properties
 consumer/src/main/**/target/
 producer/src/main/**/target/
 
