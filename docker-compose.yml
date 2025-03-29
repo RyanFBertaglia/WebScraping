@@ -6,12 +6,12 @@ services:
     ports:
       - "4444:4444"  # Porta Selenium RemoteWebDriver
   consumer:
-    image: consumer-scraping:v3
+    image: consumer-scraping:latest
     container_name: consumer-data
     ports:
       - "8080:8080"
   producer:
-    image: producer-scraping:v3
+    image: producer-scraping:latest
     container_name: producer-data
     ports:
       - "8081:8081"

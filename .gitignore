@@ -1,6 +1,6 @@
 HELP.md
-consumer/src/main/**/target/
-producer/src/main/**/target/
+consumer/target
+producer/target
 
 ### STS ###
 .apt_generated

@@ -1,50 +1,47 @@
-FROM eclipse-temurin:17-jdk-alpine AS jre-builder
-
-WORKDIR /opt/app
-
-COPY ../.mvn .mvn
-COPY mvnw .
-RUN chmod +x mvnw
-
+# Estágio 1: Build da aplicação
+FROM maven:3.8.6-eclipse-temurin-17-alpine AS build
+WORKDIR /app
 COPY pom.xml .
-RUN ./mvnw dependency:go-offline -B
+RUN mvn dependency:go-offline -B
+COPY src ./src
+RUN mvn package -DskipTests
 
-COPY src ./src/
-RUN ./mvnw package -DskipTests
+# Estágio 2: Criação do JRE mínimo
+FROM eclipse-temurin:17-jdk-alpine AS jre-builder
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 
-RUN jdeps --ignore-missing-deps -q \
-    --recursive \
+# Módulos essenciais para Spring Boot + Redis
+RUN jdeps --ignore-missing-deps \
     --multi-release 17 \
     --print-module-deps \
-    --class-path 'BOOT-INF/lib/*' \
-    target/*.jar > modules.txt
+    --class-path 'app.jar' \
+    app.jar > jre-deps.info
 
-RUN $JAVA_HOME/bin/jlink \
-    --verbose \
-    --add-modules $(cat modules.txt) \
-    --strip-debug \
+# Adiciona módulos críticos manualmente
+RUN { cat jre-deps.info; \
+     echo ",java.desktop,java.sql,java.management,java.naming,java.xml,java.instrument,java.security.jgss,java.net.http"; } \
+    | tr -d '\n' \
+    | tr ' ' ',' \
+    | sed -e 's/,,*/,/g' -e 's/^,//' -e 's/,$//' > jre-deps-clean.info
+
+RUN jlink --strip-debug \
+    --compress 2 \
     --no-man-pages \
     --no-header-files \
-    --compress=2 \
-    --output /optimized-jdk-17
+    --add-modules $(cat jre-deps-clean.info) \
+    --output /custom-jre
 
+# Estágio 3: Imagem final
 FROM alpine:latest
-
-ENV JAVA_HOME=/opt/jdk/jdk-17
-ENV PATH="${JAVA_HOME}/bin:${PATH}"
-
-COPY --from=jre-builder /optimized-jdk-17 $JAVA_HOME
-
-ARG APPLICATION_USER=spring
-RUN addgroup -S $APPLICATION_USER && \
-    adduser -S $APPLICATION_USER -G $APPLICATION_USER && \
-    mkdir /app && \
-    chown -R $APPLICATION_USER:$APPLICATION_USER /app
-
-COPY --from=jre-builder --chown=$APPLICATION_USER:$APPLICATION_USER /opt/app/target/*.jar /app/app.jar
-
 WORKDIR /app
-USER $APPLICATION_USER
 
-EXPOSE 8081
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+COPY --from=jre-builder /custom-jre /opt/jre
+COPY --from=build /app/target/*.jar app.jar
+
+ENV PATH="/opt/jre/bin:${PATH}"
+RUN adduser -D appuser
+USER appuser
+
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
