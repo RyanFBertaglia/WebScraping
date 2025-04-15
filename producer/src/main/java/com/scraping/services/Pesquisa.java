@@ -3,6 +3,7 @@ package com.scraping.services;
 import com.scraping.entities.Product;
 import com.scraping.exceptions.InvalidProductType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class Pesquisa {
 
+    @Autowired
     private final Map<String, BuscaProduto> buscaProdutoMap;
 
     public Product findProduct(String tipoProduto) {

@@ -2,6 +2,8 @@ HELP.md
 consumer/target
 producer/target
 
+producer/main/resources/application.properties
+
 ### STS ###
 .apt_generated
 .classpath

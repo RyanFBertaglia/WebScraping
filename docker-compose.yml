@@ -8,10 +8,48 @@ services:
   consumer:
     image: consumer-scraping:latest
     container_name: consumer-data
+    depends_on:
+      - redis_consumer
+    environment:
+      - REDIS_LOCAL_HOST=redis_consumer
+      - REDIS_LOCAL_PORT=6379
     ports:
       - "8080:8080"
+
   producer:
     image: producer-scraping:latest
     container_name: producer-data
+    depends_on:
+      - redis_producer
+    environment:
+      - REDIS_LOCAL_HOST=redis_producer
+      - REDIS_LOCAL_PORT=6379
     ports:
       - "8081:8081"
+
+    #As coisas sairam do controle
+
+  redis-stream:
+    image: redis:latest
+    ports: [ "6379:6379" ]
+    command: redis-server --appendonly yes
+
+  redis_producer:
+    image: redis:latest
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_producer_data:/data
+    command: redis-server --appendonly yes
+
+  redis_consumer:
+    image: redis:latest
+    ports:
+      - "6381:6379"
+    volumes:
+      - redis_consumer_data:/data
+    command: redis-server --appendonly yes
+
+volumes:
+  redis_producer_data:
+  redis_consumer_data:

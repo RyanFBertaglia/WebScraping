@@ -10,7 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 @Component
-public class ConectionFactory {
+public class ConnectionFactory {
 
     @Value("${driver.url}")
     String url;

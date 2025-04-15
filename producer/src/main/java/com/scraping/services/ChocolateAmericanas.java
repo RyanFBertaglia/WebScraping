@@ -16,7 +16,7 @@ import java.util.List;
 public class ChocolateAmericanas implements BuscaProduto{
 
     @Autowired
-    private ConectionFactory conectionFactory;
+    private ConnectionFactory connectionFactory;
 
     public static final String BEAN_ID = "BarraChocolateAmericanas";
 
@@ -24,7 +24,7 @@ public class ChocolateAmericanas implements BuscaProduto{
 
     @Override
     public Product buscaProduto() {
-        WebDriver driver = conectionFactory.conexao();
+        WebDriver driver = connectionFactory.conexao();
         String name = "", price = "";
 
         try {
