@@ -14,4 +14,10 @@ public class ProductDTO {
     String name;
     Double price;
     String local;
+
+    ProductDTO(String name, Double price, String local){
+        this.name = name;
+        this.price = price;
+        this.local = local;
+    }
 }

@@ -9,14 +9,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 @Service
 public class ReaderRedis {
 
     @Autowired
-    @Qualifier("readerRedis")
+    @Qualifier("cacheRedis")
     private RedisTemplate<String, ProductDTO> localCache;
 
     public void updateLocalCache(String key, ProductDTO value) {

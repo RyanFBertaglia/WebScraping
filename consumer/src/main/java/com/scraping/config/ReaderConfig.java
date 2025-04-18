@@ -1,100 +1,95 @@
 package com.scraping.config;
 
 import com.scraping.ProductDTO;
-import io.lettuce.core.RedisBusyException;
-import io.lettuce.core.XReadArgs;
-import io.lettuce.core.api.StatefulRedisConnection;
-import io.lettuce.core.api.sync.RedisCommands;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.cache.RedisCacheConfiguration;
-import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.connection.stream.ObjectRecord;
+import org.springframework.data.redis.connection.stream.ReadOffset;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 
 import java.time.Duration;
+import java.util.Map;
 
 @Configuration
 public class ReaderConfig {
 
-    // Cria um bean compartilhado para a ConnectionFactory
-    @Bean
-    public LettuceConnectionFactory lettuceConnectionFactory() {
-        return new LettuceConnectionFactory("localhost", 6379);
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    private final LettuceConnectionFactory lettuceConnectionFactoryLocal;
+    private final LettuceConnectionFactory lettuceConnectionFactoryStream;
+
+    public ReaderConfig(
+            @Qualifier("lettuceConnectionFactoryLocal") LettuceConnectionFactory lettuceConnectionFactoryLocal,
+            @Qualifier("lettuceConnectionFactoryStream") LettuceConnectionFactory lettuceConnectionFactoryStream) {
+        this.lettuceConnectionFactoryLocal = lettuceConnectionFactoryLocal;
+        this.lettuceConnectionFactoryStream = lettuceConnectionFactoryStream;
     }
 
-    @Autowired
-    private LettuceConnectionFactory lettuceConnectionFactory;
+
 
     @PostConstruct
     public void initConsumerGroup() {
-        StatefulRedisConnection<String, String> connection =
-                (StatefulRedisConnection<String, String>) lettuceConnectionFactory.getConnection().getNativeConnection();
+        String streamKey = "consumer-1";
+        String groupName = "product-consumer-group";
 
-        RedisCommands<String, String> sync = connection.sync();
+        // Garante que o stream exista antes de criar o grupo
+        if (!Boolean.TRUE.equals(stringRedisTemplate.hasKey(streamKey))) {
+            stringRedisTemplate.opsForStream().add(streamKey, Map.of("init", "1"));
+        }
+
+        // Tenta criar o grupo
         try {
-            sync.xgroupCreate(
-                    XReadArgs.StreamOffset.from("mystream", "0"), // Nome do stream e ID de início
-                    "mygroup"
-            );
-        } catch (RedisBusyException e) {
-            // Se o grupo já existir, ignoramos
-            if (!e.getMessage().contains("BUSYGROUP")) {
-                throw e;
+            stringRedisTemplate.opsForStream()
+                    .createGroup(streamKey, ReadOffset.from("0"), groupName);
+            System.out.println("Grupo criado com sucesso.");
+        } catch (Exception e) {
+            if (e.getMessage().contains("BUSYGROUP")) {
+                System.out.println("Grupo já existe.");
+            } else {
+                throw new RuntimeException("Cannot create reader group");
             }
         }
     }
 
     @Bean(name = "readerRedis")
-    public RedisTemplate<String, Object> readerRedisTemplate(LettuceConnectionFactory lettuceConnectionFactory) {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(lettuceConnectionFactory);
+    public RedisTemplate<String, ProductDTO> readerRedisTemplate() {
+        RedisTemplate<String, ProductDTO> template = new RedisTemplate<>();
+        template.setConnectionFactory(lettuceConnectionFactoryStream);
         template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(ProductDTO.class));
+        template.afterPropertiesSet();
         return template;
     }
 
     @Bean(name = "cacheRedis")
-    public RedisTemplate<String, ProductDTO> cacheRedisTemplate(LettuceConnectionFactory factory) {
+    public RedisTemplate<String, ProductDTO> cacheRedisTemplate() {
         RedisTemplate<String, ProductDTO> template = new RedisTemplate<>();
-        template.setConnectionFactory(factory);
+        template.setConnectionFactory(lettuceConnectionFactoryLocal);
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        template.afterPropertiesSet();
         return template;
     }
 
-
     @Bean
-    public RedisCacheManager cacheManager(LettuceConnectionFactory factory) {
-        RedisSerializationContext.SerializationPair<Object> valueSerializationPair =
-                RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer());
-
-        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeValuesWith(valueSerializationPair);
-
-        return RedisCacheManager.builder(factory)
-                .cacheDefaults(config)
-                .build();
-    }
-
-
-    @Bean
-    public StreamMessageListenerContainer<String, ObjectRecord<String, Object>> streamContainer(LettuceConnectionFactory lettuceConnectionFactory) {
-        StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, ObjectRecord<String, Object>> options =
+    public StreamMessageListenerContainer<String, ObjectRecord<String, ProductDTO>> streamContainer() {
+        StreamMessageListenerContainer.StreamMessageListenerContainerOptions<String, ObjectRecord<String, ProductDTO>> options =
                 StreamMessageListenerContainer.StreamMessageListenerContainerOptions.builder()
                         .batchSize(10)
-                        .targetType(Object.class)
+                        .targetType(ProductDTO.class)
                         .pollTimeout(Duration.ofSeconds(1))
                         .build();
 
-        return StreamMessageListenerContainer.create(lettuceConnectionFactory, options);
+        return StreamMessageListenerContainer.create(lettuceConnectionFactoryStream, options);
     }
 }
