@@ -1,7 +1,7 @@
 package com.scraping.services;
 
-import com.scraping.entities.Product;
+import com.scraping.entities.ProductDTO;
 
 public interface BuscaProduto {
-    Product buscaProduto();
+    ProductDTO buscaProduto();
 }

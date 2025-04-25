@@ -1,6 +1,6 @@
 package com.scraping.services;
 
-import com.scraping.entities.Product;
+import com.scraping.entities.ProductDTO;
 import com.scraping.exceptions.InvalidProductType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ public class Pesquisa {
     @Autowired
     private final Map<String, BuscaProduto> buscaProdutoMap;
 
-    public Product findProduct(String tipoProduto) {
+    public ProductDTO findProduct(String tipoProduto) {
         BuscaProduto produto = getInstanceProduct(tipoProduto);
         return produto.buscaProduto();
     }

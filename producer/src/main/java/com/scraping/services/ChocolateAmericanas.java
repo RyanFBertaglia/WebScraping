@@ -1,6 +1,6 @@
 package com.scraping.services;
 
-import com.scraping.entities.Product;
+import com.scraping.entities.ProductDTO;
 import com.scraping.exceptions.LoadPageError;
 import com.scraping.exceptions.NotFoundItem;
 import org.openqa.selenium.*;
@@ -23,7 +23,7 @@ public class ChocolateAmericanas implements BuscaProduto{
     String url = "https://www.americanas.com.br/lojas-proximas/33014556000196/5310?c_legionRegion=202235109001&c_macroRegion=SP_INTERIOR&c_mesoRegion=3510&context=lojas_proximas&filter=%7B%22id%22%3A%22variation.sellerID%22%2C%22value%22%3A%2233014556000196%22%2C%22fixed%22%3Atrue%7D&filter=%7B%22id%22%3A%22variation.warehouse%22%2C%22value%22%3A%225310%22%2C%22fixed%22%3Atrue%7D&filter=%7B%22id%22%3A%22wit%22%2C%22value%22%3A%22barra%20de%20chocolate%22%2C%22fixed%22%3Afalse%7D&lat=-22.9406129&lon=-47.111549&sortBy=relevance&source=nanook&page=2&limit=24&offset=24";
 
     @Override
-    public Product buscaProduto() {
+    public ProductDTO buscaProduto() {
         WebDriver driver = connectionFactory.conexao();
         String name = "", price = "";
 
@@ -59,7 +59,7 @@ public class ChocolateAmericanas implements BuscaProduto{
         } finally {
             driver.quit();
         }
-        return new Product(name, price, "Americanas");
+        return new ProductDTO("1", name, price, "Americanas");
     }
     //Barra de Chocolate Branco Lacta Laka 145g
 }

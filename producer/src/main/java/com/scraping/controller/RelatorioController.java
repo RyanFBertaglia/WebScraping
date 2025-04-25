@@ -1,6 +1,6 @@
 package com.scraping.controller;
 
-import com.scraping.entities.Product;
+import com.scraping.entities.ProductDTO;
 import com.scraping.services.Pesquisa;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +22,8 @@ public class RelatorioController {
     }
 
     @GetMapping("/getProduct")
-    public ResponseEntity<Product> getProductInformation(@RequestParam String typeProduct){
-        Product product = pesquisa.findProduct(typeProduct);
+    public ResponseEntity<ProductDTO> getProductInformation(@RequestParam String typeProduct){
+        ProductDTO product = pesquisa.findProduct(typeProduct);
         return ResponseEntity.status(200).body(product);
     }
 }

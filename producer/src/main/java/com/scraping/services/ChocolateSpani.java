@@ -1,6 +1,6 @@
 package com.scraping.services;
 
-import com.scraping.entities.Product;
+import com.scraping.entities.ProductDTO;
 import com.scraping.exceptions.LoadPageError;
 import com.scraping.exceptions.NotFoundItem;
 import org.openqa.selenium.*;
@@ -21,7 +21,7 @@ public class ChocolateSpani implements BuscaProduto {
     String url = "https://www.spanionline.com.br/produto/13383/chocolate-tablete-lacta-145g-leite";
 
     @Override
-    public Product buscaProduto() {
+    public ProductDTO buscaProduto() {
         WebDriver driver = connectionFactory.conexao();
         String name = "", price = "";
 
@@ -43,6 +43,6 @@ public class ChocolateSpani implements BuscaProduto {
         }finally {
             driver.quit();
         }
-        return new Product(name, price, "Spani");
+        return new ProductDTO("3", name, price, "Spani");
     }
 }

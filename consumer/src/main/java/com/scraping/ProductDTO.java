@@ -12,10 +12,10 @@ import lombok.Setter;
 public class ProductDTO {
     String code;
     String name;
-    Double price;
+    String price;
     String local;
 
-    ProductDTO(String name, Double price, String local){
+    ProductDTO(String name, String price, String local) {
         this.name = name;
         this.price = price;
         this.local = local;

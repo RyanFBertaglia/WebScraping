@@ -1,6 +1,6 @@
 package com.scraping.services;
 
-import com.scraping.entities.Product;
+import com.scraping.entities.ProductDTO;
 import com.scraping.exceptions.LoadPageError;
 import com.scraping.exceptions.NotFoundItem;
 import org.openqa.selenium.*;
@@ -16,12 +16,16 @@ public class ChocolateAtacadao implements BuscaProduto{
     @Autowired
     private ConnectionFactory connectionFactory;
 
+    public ChocolateAtacadao(ConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
+
     public static final String BEAN_ID = "BarraChocolateAtacadao";
 
     String url = "https://www.atacadao.com.br/chocolate-lacta-ao-leite-94507-44721/p";
 
     @Override
-    public Product buscaProduto() {
+    public ProductDTO buscaProduto() {
         WebDriver driver = connectionFactory.conexao();
         String name = "", price = "";
 
@@ -45,6 +49,6 @@ public class ChocolateAtacadao implements BuscaProduto{
         }finally {
             driver.quit();
         }
-        return new Product(name, price, "Atacadao");
+        return new ProductDTO("2", name, price, "Atacadao");
     }
 }

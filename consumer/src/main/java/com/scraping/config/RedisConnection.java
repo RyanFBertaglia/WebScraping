@@ -1,6 +1,7 @@
 package com.scraping.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -8,15 +9,28 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 
 @Configuration
 public class RedisConnection {
+
+    @Value("spring.redis.cache.host")
+    private String localRedisHost;
+
+    @Value("spring.redis.cache.port")
+    private int localRedisPort;
+
+    @Value("spring.redis.stream.port")
+    private int redisStreamPort;
+
+    @Value("spring.redis.stream.host")
+    private String redisStreamHost;
+
+
     @Bean
     public LettuceConnectionFactory lettuceConnectionFactoryLocal() {
-        return new LettuceConnectionFactory("localhost", 6379);
+        return new LettuceConnectionFactory(localRedisHost, localRedisPort);
     }
 
-    //Redis Stream
     @Bean
     public LettuceConnectionFactory lettuceConnectionFactoryStream() {
-        return new LettuceConnectionFactory("localhost", 6380);
+        return new LettuceConnectionFactory(redisStreamHost, redisStreamPort);
     }
 
     @Bean

@@ -9,7 +9,9 @@ import java.util.ArrayList;
 
 @RequestMapping("prices")
 public class ReportController {
-    ReturnData returnData;
+
+    private final ReturnData returnData;
+
     ReportController(ReturnData returnData) {
         this.returnData = returnData;
     }

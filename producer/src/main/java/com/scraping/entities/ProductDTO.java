@@ -5,12 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Product {
-    String nome;
-    String preco;
+@Getter
+@Setter
+public class ProductDTO {
+    String code;
+    String name;
+    String price;
     String local;
 }
+

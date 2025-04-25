@@ -1,6 +1,7 @@
 package com.scraping.config;
 
 import com.scraping.ProductDTO;
+import com.scraping.exceptions.DataInaccessible;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,7 +13,6 @@ import org.springframework.data.redis.connection.stream.ReadOffset;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 
@@ -56,7 +56,7 @@ public class ReaderConfig {
             if (e.getMessage().contains("BUSYGROUP")) {
                 System.out.println("Grupo já existe.");
             } else {
-                throw new RuntimeException("Cannot create reader group");
+                throw new DataInaccessible("Cannot create reader group");
             }
         }
     }
@@ -66,7 +66,7 @@ public class ReaderConfig {
         RedisTemplate<String, ProductDTO> template = new RedisTemplate<>();
         template.setConnectionFactory(lettuceConnectionFactoryStream);
         template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(ProductDTO.class));
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         template.afterPropertiesSet();
         return template;
     }
@@ -87,7 +87,7 @@ public class ReaderConfig {
                 StreamMessageListenerContainer.StreamMessageListenerContainerOptions.builder()
                         .batchSize(10)
                         .targetType(ProductDTO.class)
-                        .pollTimeout(Duration.ofSeconds(1))
+                        .pollTimeout(Duration.ofSeconds(15))
                         .build();
 
         return StreamMessageListenerContainer.create(lettuceConnectionFactoryStream, options);
