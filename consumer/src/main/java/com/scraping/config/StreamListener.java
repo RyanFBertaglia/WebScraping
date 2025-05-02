@@ -2,6 +2,7 @@ package com.scraping.config;
 
 import com.scraping.entity.ProductDTO;
 import com.scraping.repository.ReaderCache;
+import com.scraping.repository.RedisDB;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.stream.*;
@@ -10,11 +11,18 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class StreamListener {
-    @Autowired
+
     private StreamMessageListenerContainer<String, ObjectRecord<String, ProductDTO>> listenerContainer;
+    private final RedisDB redisDB;
 
     @Autowired
-    private ReaderCache readerCache;
+    StreamListener(StreamMessageListenerContainer<String, ObjectRecord<String, ProductDTO>> listenerContainer,
+                   RedisDB redisDB) {
+        this.listenerContainer = listenerContainer;
+        this.redisDB = redisDB;
+    }
+
+
 
 
     @PostConstruct
@@ -24,7 +32,7 @@ public class StreamListener {
                 StreamOffset.create("products:specific", ReadOffset.lastConsumed()),
                 record -> {
                     ProductDTO product = record.getValue();
-                    readerCache.update(product);
+                    redisDB.update(product);
                     System.out.println("Produto recived and cache updated: " + product.getCode());
                 }
         );

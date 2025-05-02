@@ -1,7 +1,6 @@
 package com.scraping.repository;
 
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.model.UpdateOptions;
 import com.scraping.config.MongoDBConnection;
@@ -18,8 +17,12 @@ import static com.mongodb.client.model.Filters.eq;
 @Service
 public class MongoDB implements Database{
 
-    @Autowired
     MongoDBConnection mongoDBConnection;
+
+    @Autowired
+    public MongoDB(MongoDBConnection mongoDBConnection) {
+        this.mongoDBConnection = mongoDBConnection;
+    }
 
     public void update(ProductDTO productDTO) {
         MongoCollection<Document> collection = mongoDBConnection.getDatabase().getCollection("produtos");

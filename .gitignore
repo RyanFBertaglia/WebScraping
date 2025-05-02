@@ -3,6 +3,8 @@ consumer/target
 producer/target
 
 producer/main/resources/application.properties
+consumer/main/resources/application.properties
+consumer/test/resources/application-test.properties
 
 ### STS ###
 .apt_generated

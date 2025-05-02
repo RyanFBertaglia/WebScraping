@@ -35,6 +35,7 @@ public class RedisDB implements Database{
             throw new DataInaccessible("Error while querying local cache");
         }
     }
+
     public ArrayList<ProductDTO> getAllProducts() {
         try {
             Set<String> keys = localCache.keys("code:*"); // busca todas as chaves de produto
@@ -55,13 +56,13 @@ public class RedisDB implements Database{
 
     public void clean() {
         try {
-            Set<String> keys = localCache.keys("code:*"); // Padrão das chaves
+            Set<String> keys = localCache.keys("code:*");
             if (keys != null && !keys.isEmpty()) {
-                localCache.delete(keys); // Deleta todas as chaves de uma vez
+                localCache.delete(keys);
             }
         } catch (Exception e) {
-            System.err.println("Erro ao limpar o cache local: " + e.getMessage());
-            throw new UnableRedisConnection("Erro ao limpar o cache local");
+            System.err.println("Error while cleaning the local cache: " + e.getMessage());
+            throw new UnableRedisConnection("Error while cleaning the cache");
         }
     }
 
