@@ -1,27 +1,34 @@
 package com.scraping.controller;
 
-import com.scraping.ProductDTO;
-import com.scraping.services.ReturnData;
+import com.scraping.entity.ProductDTO;
+import com.scraping.repository.RedisDB;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 
-@RequestMapping("prices")
+@RestController
+@RequestMapping("/prices")
 public class ReportController {
 
-    private final ReturnData returnData;
+    private final RedisDB redisDB;
 
-    ReportController(ReturnData returnData) {
-        this.returnData = returnData;
+    ReportController(RedisDB redisDB) {
+        this.redisDB = redisDB;
     }
 
+    @GetMapping("/getAllProducts")
     public ResponseEntity<ArrayList<ProductDTO>> pricesAllProducts() {
-        ArrayList<ProductDTO> data = returnData.getAllProducts();
+        ArrayList<ProductDTO> data = redisDB.getAllProducts();
         return ResponseEntity.status(200).body(data);
     }
-    public ResponseEntity<ProductDTO> priceSpecific(String code) {
-        ProductDTO data = returnData.getItem(code);
+
+    @GetMapping("/getSpecific/{code}")
+    public ResponseEntity<ProductDTO> priceSpecific(@PathVariable String code) {
+        ProductDTO data = redisDB.getItem(code);
         return ResponseEntity.status(200).body(data);
     }
 }

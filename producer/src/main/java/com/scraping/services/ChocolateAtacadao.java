@@ -16,10 +16,6 @@ public class ChocolateAtacadao implements BuscaProduto{
     @Autowired
     private ConnectionFactory connectionFactory;
 
-    public ChocolateAtacadao(ConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
-    }
-
     public static final String BEAN_ID = "BarraChocolateAtacadao";
 
     String url = "https://www.atacadao.com.br/chocolate-lacta-ao-leite-94507-44721/p";

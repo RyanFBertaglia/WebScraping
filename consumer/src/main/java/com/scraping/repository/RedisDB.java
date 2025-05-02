@@ -1,6 +1,6 @@
-package com.scraping.config;
+package com.scraping.repository;
 
-import com.scraping.ProductDTO;
+import com.scraping.entity.ProductDTO;
 import com.scraping.exceptions.DataInaccessible;
 import com.scraping.exceptions.UnableRedisConnection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,15 +12,15 @@ import java.util.ArrayList;
 import java.util.Set;
 
 @Service
-public class ReaderRedis {
+public class RedisDB implements Database{
 
     @Autowired
     @Qualifier("cacheRedis")
     private RedisTemplate<String, ProductDTO> localCache;
 
-    public void updateLocalCache(String key, ProductDTO value) {
+    public void update(ProductDTO productDTO) {
         try {
-            localCache.opsForValue().set(key, value);
+            localCache.opsForValue().set(productDTO.getCode(), productDTO);
         } catch (Exception e) {
             System.err.println("Erro updating local cache: " + e.getMessage());
             throw new UnableRedisConnection("Error while updating the local cache");
@@ -28,9 +28,9 @@ public class ReaderRedis {
         }
     }
 
-    public ProductDTO getItem(String key) {
+    public ProductDTO getItem(String code) {
         try{
-            return localCache.opsForValue().get(key);
+            return localCache.opsForValue().get(code);
         } catch (Exception e) {
             throw new DataInaccessible("Error while querying local cache");
         }
@@ -52,4 +52,17 @@ public class ReaderRedis {
             throw new DataInaccessible("Error while querying local cache");
         }
     }
+
+    public void clean() {
+        try {
+            Set<String> keys = localCache.keys("code:*"); // Padrão das chaves
+            if (keys != null && !keys.isEmpty()) {
+                localCache.delete(keys); // Deleta todas as chaves de uma vez
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao limpar o cache local: " + e.getMessage());
+            throw new UnableRedisConnection("Erro ao limpar o cache local");
+        }
+    }
+
 }

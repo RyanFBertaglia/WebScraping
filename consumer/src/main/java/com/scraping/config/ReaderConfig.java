@@ -1,7 +1,8 @@
 package com.scraping.config;
 
-import com.scraping.ProductDTO;
+import com.scraping.entity.ProductDTO;
 import com.scraping.exceptions.DataInaccessible;
+import io.lettuce.core.RedisBusyException;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,7 +18,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 
 import java.time.Duration;
-import java.util.Map;
 
 @Configuration
 public class ReaderConfig {
@@ -25,43 +25,43 @@ public class ReaderConfig {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
-    private final LettuceConnectionFactory lettuceConnectionFactoryLocal;
-    private final LettuceConnectionFactory lettuceConnectionFactoryStream;
+    @Autowired
+    @Qualifier("lettuceConnectionFactoryLocal")
+    private LettuceConnectionFactory lettuceConnectionFactoryLocal;
 
-    public ReaderConfig(
-            @Qualifier("lettuceConnectionFactoryLocal") LettuceConnectionFactory lettuceConnectionFactoryLocal,
-            @Qualifier("lettuceConnectionFactoryStream") LettuceConnectionFactory lettuceConnectionFactoryStream) {
-        this.lettuceConnectionFactoryLocal = lettuceConnectionFactoryLocal;
-        this.lettuceConnectionFactoryStream = lettuceConnectionFactoryStream;
-    }
-
+    @Autowired
+    @Qualifier("lettuceConnectionFactoryStream")
+    private LettuceConnectionFactory lettuceConnectionFactoryStream;
 
 
     @PostConstruct
     public void initConsumerGroup() {
-        String streamKey = "consumer-1";
+        String streamKey = "products:specific";
         String groupName = "product-consumer-group";
 
-        // Garante que o stream exista antes de criar o grupo
-        if (!Boolean.TRUE.equals(stringRedisTemplate.hasKey(streamKey))) {
-            stringRedisTemplate.opsForStream().add(streamKey, Map.of("init", "1"));
-        }
-
-        // Tenta criar o grupo
         try {
             stringRedisTemplate.opsForStream()
                     .createGroup(streamKey, ReadOffset.from("0"), groupName);
-            System.out.println("Grupo criado com sucesso.");
+            System.out.println("Reader group created.");
         } catch (Exception e) {
-            if (e.getMessage().contains("BUSYGROUP")) {
-                System.out.println("Grupo já existe.");
-            } else {
-                throw new DataInaccessible("Cannot create reader group");
+            Throwable cause = e.getCause();
+
+            // Verifica se a causa direta ou indireta é um RedisBusyException
+            while (cause != null) {
+                if (cause instanceof RedisBusyException) {
+                    System.out.println("Group already exist. Continuing the process.");
+                    return;
+                }
+                cause = cause.getCause();
             }
+            throw new DataInaccessible("Cannot create reader group", e);
         }
+
+        //Todo: Arrumar o cache local
+
     }
 
-    @Bean(name = "readerRedis")
+    @Bean(name = "readerRedisTemplate")
     public RedisTemplate<String, ProductDTO> readerRedisTemplate() {
         RedisTemplate<String, ProductDTO> template = new RedisTemplate<>();
         template.setConnectionFactory(lettuceConnectionFactoryStream);

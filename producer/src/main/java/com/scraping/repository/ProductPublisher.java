@@ -1,4 +1,4 @@
-package com.scraping.RedisCache;
+package com.scraping.repository;
 
 
 import com.scraping.entities.ProductDTO;
@@ -23,7 +23,6 @@ public class ProductPublisher {
         fields.put("price", data.getPrice());
         fields.put("local", data.getLocal());
 
-        // Escrevendo no stream 'products:specific'
         redisTemplate.opsForStream().add("products:specific", fields);
         return true;
     }

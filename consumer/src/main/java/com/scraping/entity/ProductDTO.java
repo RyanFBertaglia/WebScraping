@@ -1,9 +1,10 @@
-package com.scraping;
+package com.scraping.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.bson.Document;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,5 +20,16 @@ public class ProductDTO {
         this.name = name;
         this.price = price;
         this.local = local;
+    }
+
+    public static ProductDTO fromDocument(Document doc) {
+        if (doc == null) return null;
+
+        return new ProductDTO(
+                doc.getString("code"),
+                doc.getString("name"),
+                doc.getString("price"),
+                doc.getString("local")
+        );
     }
 }
