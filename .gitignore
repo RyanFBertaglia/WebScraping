@@ -2,9 +2,10 @@ HELP.md
 consumer/target
 producer/target
 
-producer/main/resources/application.properties
-consumer/main/resources/application.properties
-consumer/test/resources/application-test.properties
+consumer/src/main/resources/
+producer/src/main/resources/
+consumer/src/test/resources/
+producer/src/main/resources/application.properties
 
 ### STS ###
 .apt_generated

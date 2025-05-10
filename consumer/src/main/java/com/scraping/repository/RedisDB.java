@@ -18,21 +18,27 @@ public class RedisDB implements Database{
     @Qualifier("cacheRedis")
     private RedisTemplate<String, ProductDTO> localCache;
 
+    @Autowired
+    private MongoDB mongoDB;
+
     public void update(ProductDTO productDTO) {
         try {
             localCache.opsForValue().set(productDTO.getCode(), productDTO);
         } catch (Exception e) {
             System.err.println("Erro updating local cache: " + e.getMessage());
             throw new UnableRedisConnection("Error while updating the local cache");
-            // Conectar ao DB
         }
     }
 
     public ProductDTO getItem(String code) {
         try{
             return localCache.opsForValue().get(code);
-        } catch (Exception e) {
-            throw new DataInaccessible("Error while querying local cache");
+        } catch (Exception errorLocal) {
+            try{
+                return mongoDB.getItem(code);
+            } catch(Exception errorMongoDB) {
+                throw new DataInaccessible("Error while querying the database");
+            }
         }
     }
 
@@ -50,7 +56,11 @@ public class RedisDB implements Database{
             }
             return produtos;
         } catch (Exception e) {
-            throw new DataInaccessible("Error while querying local cache");
+            try {
+                return mongoDB.getAllProducts();
+            } catch (Exception errorReturningAllProducts) {
+                throw new DataInaccessible("Error while querying local cache ");
+            }
         }
     }
 
@@ -65,5 +75,4 @@ public class RedisDB implements Database{
             throw new UnableRedisConnection("Error while cleaning the cache");
         }
     }
-
 }

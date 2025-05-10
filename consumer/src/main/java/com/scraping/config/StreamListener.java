@@ -1,7 +1,6 @@
 package com.scraping.config;
 
 import com.scraping.entity.ProductDTO;
-import com.scraping.repository.ReaderCache;
 import com.scraping.repository.RedisDB;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;

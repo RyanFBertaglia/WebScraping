@@ -25,7 +25,7 @@ public class MongoDB implements Database{
     }
 
     public void update(ProductDTO productDTO) {
-        MongoCollection<Document> collection = mongoDBConnection.getDatabase().getCollection("produtos");
+        MongoCollection<Document> collection = mongoDBConnection.getProducts();
 
         Bson filter = eq("code", productDTO.getCode());
 
@@ -41,13 +41,13 @@ public class MongoDB implements Database{
     }
 
     public ProductDTO getItem(String code) {
-        MongoCollection<Document> collection = mongoDBConnection.getDatabase().getCollection("produtos");
+        MongoCollection<Document> collection = mongoDBConnection.getProducts();
         Document doc = collection.find(eq("code", code)).first();
         return ProductDTO.fromDocument(doc);
     }
 
     public ArrayList<ProductDTO> getAllProducts() {
-        MongoCollection<Document> collection = mongoDBConnection.getDatabase().getCollection("produtos");
+        MongoCollection<Document> collection = mongoDBConnection.getProducts();
         ArrayList<ProductDTO> products = new ArrayList<>();
 
         for (Document doc : collection.find()) {

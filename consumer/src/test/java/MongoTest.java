@@ -1,7 +1,6 @@
 import com.scraping.config.MongoDBConnection;
 import com.scraping.entity.ProductDTO;
 import com.scraping.repository.MongoDB;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,8 +9,7 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = {
         MongoDBConnection.class,
@@ -24,12 +22,7 @@ public class MongoTest {
     private MongoDB mongoDB;
 
     @Value("${spring.mongodb.url}")
-    private static String url;
-
-    @BeforeAll
-    public static void testFields() {
-        System.out.println(url);
-    }
+    private String url;
 
     @Test
     public void testWrite() {
@@ -40,8 +33,14 @@ public class MongoTest {
     }
 
     @Test
-    public void testRead() {
+    public void testReadFalse() {
         ProductDTO produto = mongoDB.getItem("celular");
+        assertNull(produto);
+    }
+
+    @Test
+    public void testReadTrue() {
+        ProductDTO produto = mongoDB.getItem("celular1002");
         assertNotNull(produto);
     }
 
