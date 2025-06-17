@@ -14,7 +14,7 @@
 
 ---
 ## Demonstração no Postman
-![fotoPedido](producer/src/main/resources/PrimeiroWebScrapingFuncional.png)
+![fotoPedido](producer/src/main/resources/primeiroWebScrapingFuncional.png)
 
 ## Abaixo demonstro o que acontece por trás dessa API
 ![diagrama](producer/src/main/resources/DiagramaDeSequencia.png)
