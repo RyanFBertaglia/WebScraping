@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.List;
 
 @Service(ChocolateSpani.BEAN_ID)
 public class ChocolateSpani implements BuscaProduto {
@@ -28,12 +29,12 @@ public class ChocolateSpani implements BuscaProduto {
         try {
 
             driver.get(url);
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
-            WebElement body = driver.findElement(By.tagName("body"));
-            WebElement containerPrice = driver.findElement(
-                    By.xpath("//span[@data-cy='preco']")
-            );
+            WebElement containerPrice = new WebDriverWait(driver, Duration.ofSeconds(20))
+                    .until(d -> d.findElement(By.cssSelector("span[data-cy='preco'], span.preco, [class*='price']")));
+
+
             price = containerPrice.getText();
             name = "Barra de Chocolate Lacta 145g";
         } catch (TimeoutException e) {

@@ -5,7 +5,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 
-//Permite injeção de dependências do Spring em Jobs do Quartz
+//Permits dependency injection from Spring on Quartz's Jobs
 public class JobFactory extends SpringBeanJobFactory {
     private final AutowireCapableBeanFactory beanFactory;
 
@@ -21,5 +21,4 @@ public class JobFactory extends SpringBeanJobFactory {
 
         return jobInstance;
     }
-
 }

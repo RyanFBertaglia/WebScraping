@@ -8,8 +8,20 @@
 - **Spring Boot**
 - **Maven**
 - **Docker**
+- **Selenium**
+- **Redis Stream**
 - **Docker compose**
 
 ---
 ## Demonstração no Postman
-![fotoPedido](producer/src/main/resources/primeiroWebScrapingFuncional.png)
+![fotoPedido](producer/src/main/resources/PrimeiroWebScrapingFuncional.png)
+
+## Abaixo demonstro o que acontece por trás dessa API
+![diagrama](producer/src/main/resources/DiagramaDeSequencia.png)
+
+##  e aqui os serviços utilizados
+
+`Não aparece o banco de dados no docker porque utilizei o MongoDB Atlas`
+![servicos](producer/src/main/resources/DockerCompose.png)
+
+
