@@ -1,4 +1,3 @@
-# Estágio 1: Build da aplicação
 FROM maven:3.8.6-eclipse-temurin-17-alpine AS build
 WORKDIR /app
 COPY pom.xml .
@@ -6,19 +5,17 @@ RUN mvn dependency:go-offline -B
 COPY src ./src
 RUN mvn package -DskipTests
 
-# Estágio 2: Criação do JRE mínimo
 FROM eclipse-temurin:17-jdk-alpine AS jre-builder
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
-# Módulos essenciais para Spring Boot + Redis
+# Spring Boot + Redis
 RUN jdeps --ignore-missing-deps \
     --multi-release 17 \
     --print-module-deps \
     --class-path 'app.jar' \
     app.jar > jre-deps.info
 
-# Adiciona módulos críticos manualmente
 RUN { cat jre-deps.info; \
      echo ",java.desktop,java.sql,java.management,java.naming,java.xml,java.instrument,java.security.jgss,java.net.http"; } \
     | tr -d '\n' \
@@ -32,7 +29,6 @@ RUN jlink --strip-debug \
     --add-modules $(cat jre-deps-clean.info) \
     --output /custom-jre
 
-# Estágio 3: Imagem final
 FROM alpine:latest
 WORKDIR /app
 
