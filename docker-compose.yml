@@ -27,8 +27,6 @@ services:
     ports:
       - "8081:8081"
 
-    #As coisas sairam do controle
-
   redis-stream:
     image: redis:latest
     ports: [ "6379:6379" ]
